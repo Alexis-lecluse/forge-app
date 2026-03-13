@@ -13,7 +13,6 @@ export default function RootLayout() {
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log('Auth state changed:', { _event, session });
       setSession(session);
       setInitialized(true);
     });
@@ -26,8 +25,6 @@ export default function RootLayout() {
 
     const inAuthGroup = segments[0] === '(auth)';
 
-    console.log({session, inAuthGroup});
-    
     if (!session && !inAuthGroup) {
       router.replace('/(auth)/login');
     } else if (session && inAuthGroup) {
