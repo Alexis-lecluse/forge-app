@@ -12,13 +12,10 @@ export default function RootLayout() {
   const segments = useSegments();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      console.log('Auth state changed:', { _event, session });
       setSession(session);
       setInitialized(true);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
     });
 
     return () => subscription.unsubscribe();
@@ -29,6 +26,8 @@ export default function RootLayout() {
 
     const inAuthGroup = segments[0] === '(auth)';
 
+    console.log({session, inAuthGroup});
+    
     if (!session && !inAuthGroup) {
       router.replace('/(auth)/login');
     } else if (session && inAuthGroup) {
@@ -64,13 +63,6 @@ export default function RootLayout() {
           options={{ 
             title: 'Home',
             headerLargeTitle: true,
-          }} 
-        />
-        <Stack.Screen 
-          name="session/[id]" 
-          options={{ 
-            title: 'Training Session',
-            headerBackTitle: 'Retour',
           }} 
         />
       </Stack>

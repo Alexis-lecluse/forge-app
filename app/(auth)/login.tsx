@@ -10,11 +10,23 @@ export default function LoginScreen() {
   const redirectTo = AuthSession.makeRedirectUri({ scheme: 'forge' });
 
   useEffect(() => {
-    WebBrowser.warmUpAsync();
-    return () => { WebBrowser.coolDownAsync(); };
+    if (Platform.OS !== 'web') {
+      WebBrowser.warmUpAsync();
+      return () => { WebBrowser.coolDownAsync(); };
+    }
   }, []);
 
   async function signInWithGoogle() {
+    if (Platform.OS === 'web') {
+      // Sur web : redirection directe gérée par le navigateur
+      await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: window.location.origin },
+      });
+      return;
+    }
+
+    // Sur iOS / Android : ouverture in-app via WebBrowser
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -39,6 +51,14 @@ export default function LoginScreen() {
   }
 
   async function signInWithApple() {
+    if (Platform.OS === 'web') {
+      await supabase.auth.signInWithOAuth({
+        provider: 'apple',
+        options: { redirectTo: window.location.origin },
+      });
+      return;
+    }
+
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'apple',
       options: {
@@ -105,7 +125,7 @@ const styles = StyleSheet.create({
   logo: {
     fontSize: 56,
     fontWeight: '900',
-    color: '#FF4C00',
+    color: '#ff6c2d',
     letterSpacing: 8,
   },
   tagline: {
@@ -115,13 +135,15 @@ const styles = StyleSheet.create({
   },
   buttons: {
     width: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
     gap: 14,
   },
   buttonGoogle: {
-    width: '100%',
     backgroundColor: '#fff',
     borderRadius: 14,
-    paddingVertical: 16,
+    padding: 16,
     alignItems: 'center',
   },
   buttonGoogleText: {
@@ -130,7 +152,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   buttonApple: {
-    width: '100%',
+    width: '50%',
     backgroundColor: '#000',
     borderRadius: 14,
     paddingVertical: 16,
