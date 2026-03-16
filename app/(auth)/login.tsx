@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import * as AuthSession from 'expo-auth-session';
-import { View, Text, TouchableOpacity, StyleSheet, Image, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { supabase } from '../../supabase/supabase';
 
 WebBrowser.maybeCompleteAuthSession();
@@ -41,8 +41,10 @@ export default function LoginScreen() {
 
     if (result.type === 'success' && result.url) {
       const url = new URL(result.url);
-      const accessToken = url.searchParams.get('access_token');
-      const refreshToken = url.searchParams.get('refresh_token');
+      // Les tokens sont dans le hash (#access_token=...)
+      const hashParams = new URLSearchParams(url.hash.substring(1));
+      const accessToken = hashParams.get('access_token');
+      const refreshToken = hashParams.get('refresh_token');
 
       if (accessToken && refreshToken) {
         await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
@@ -73,8 +75,9 @@ export default function LoginScreen() {
 
     if (result.type === 'success' && result.url) {
       const url = new URL(result.url);
-      const accessToken = url.searchParams.get('access_token');
-      const refreshToken = url.searchParams.get('refresh_token');
+      const hashParams = new URLSearchParams(url.hash.substring(1));
+      const accessToken = hashParams.get('access_token');
+      const refreshToken = hashParams.get('refresh_token');
 
       if (accessToken && refreshToken) {
         await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
