@@ -2,12 +2,17 @@ import { useEffect } from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import * as AuthSession from 'expo-auth-session';
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { useRouter } from 'expo-router';
 import { supabase } from '../../supabase/supabase';
+import { useOnboardingStore } from '../../src/store/useOnboardingStore';
 
 WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen() {
+  const router = useRouter();
   const redirectTo = AuthSession.makeRedirectUri({ scheme: 'forge' });
+  const onboardingMode = useOnboardingStore((s) => s.mode);
+  const hasCompletedOnboarding = onboardingMode !== null;
 
   useEffect(() => {
     if (Platform.OS !== 'web') {
@@ -102,6 +107,24 @@ export default function LoginScreen() {
             <Text style={styles.buttonAppleText}>Continuer avec Apple</Text>
           </TouchableOpacity>
         )}
+
+        {!hasCompletedOnboarding && (
+          <>
+            <View style={styles.separator}>
+              <View style={styles.separatorLine} />
+              <Text style={styles.separatorText}>Nouveau sur FORGE ?</Text>
+              <View style={styles.separatorLine} />
+            </View>
+
+            <TouchableOpacity
+              style={styles.buttonOnboarding}
+              onPress={() => router.push('/(onboarding)/onboardingMode')}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.buttonOnboardingText}>Créer mon compte 🔥</Text>
+            </TouchableOpacity>
+          </>
+        )}
       </View>
 
       <Text style={styles.legal}>
@@ -114,7 +137,6 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0D0D0D',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: 80,
@@ -167,6 +189,36 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
+  },
+  separator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    width: '100%',
+    marginVertical: 4,
+  },
+  separatorLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#222',
+  },
+  separatorText: {
+    fontSize: 12,
+    color: '#555',
+    fontWeight: '500',
+  },
+  buttonOnboarding: {
+    borderRadius: 14,
+    padding: 16,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#FF4C00',
+    backgroundColor: 'rgba(255,76,0,0.08)',
+  },
+  buttonOnboardingText: {
+    color: '#FF4C00',
+    fontSize: 16,
+    fontWeight: '700',
   },
   legal: {
     fontSize: 12,
