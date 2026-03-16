@@ -24,10 +24,11 @@ export default function RootLayout() {
     if (!initialized) return;
 
     const inAuthGroup = segments[0] === '(auth)';
+    const inOnboardingGroup = segments[0] === '(onboarding)';
 
-    if (!session && !inAuthGroup) {
+    if (!session && !inAuthGroup && !inOnboardingGroup) {
       router.replace('/(auth)/login');
-    } else if (session && inAuthGroup) {
+    } else if (session && (inAuthGroup || inOnboardingGroup)) {
       router.replace('/');
     }
   }, [session, initialized, segments]);
@@ -55,6 +56,10 @@ export default function RootLayout() {
           name="(auth)"
           options={{ headerShown: false }}
         />
+        <Stack.Screen
+          name="(onboarding)"
+          options={{ headerShown: false }}
+        />
         <Stack.Screen 
           name="index" 
           options={{ 
@@ -71,6 +76,8 @@ export default function RootLayout() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212',
+    backgroundColor: '#272e35',
+    paddingBottom: 32,
+    paddingHorizontal: 28
   },
 });
