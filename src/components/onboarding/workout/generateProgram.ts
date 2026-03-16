@@ -1,5 +1,5 @@
 import { Goal, TrainingLevel, TrainingLocation } from '../../../store/useOnboardingStore';
-import { Exercise, GeneratedProgram, ProgramSession } from './workout.tyoes';
+import { Exercise, GeneratedProgram, ProgramSession } from './workout.types';
 
 const DAY_SCHEDULES: Record<number, string[]> = {
   2: ['Lundi', 'Jeudi'],
