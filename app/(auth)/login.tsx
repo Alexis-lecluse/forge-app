@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import * as AuthSession from 'expo-auth-session';
+import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { supabase } from '../../supabase/supabase';
@@ -8,9 +9,15 @@ import { useOnboardingStore } from '../../src/store/useOnboardingStore';
 
 WebBrowser.maybeCompleteAuthSession();
 
+// In Expo Go the custom scheme is not registered — use the exp:// URI instead.
+const isExpoGo = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
+
 export default function LoginScreen() {
   const router = useRouter();
-  const redirectTo = AuthSession.makeRedirectUri({ scheme: 'forge' });
+  const redirectTo = AuthSession.makeRedirectUri(
+    isExpoGo ? {} : { scheme: 'forge' }
+  );
+  console.log('redirectTo:', redirectTo) 
   const onboardingMode = useOnboardingStore((s) => s.mode);
   const hasCompletedOnboarding = onboardingMode !== null;
 
