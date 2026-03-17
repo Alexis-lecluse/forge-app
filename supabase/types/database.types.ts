@@ -1,4 +1,4 @@
-import { Profile } from "./profile.types";
+import { Profile } from './profile.types';
 
 export type Json =
   | string
@@ -11,7 +11,16 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      profiles: Profile;
+      profiles: {
+        Row: Profile['Row'];
+        Insert: Profile['Insert'];
+        Update: Profile['Update'];
+        Relationships: [];
+      };
     };
-  }
+    Views: {};
+    Functions: {};
+    Enums: {};
+    CompositeTypes: {};
+  };
 };

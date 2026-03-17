@@ -108,7 +108,7 @@ export default function LoginScreen() {
           </TouchableOpacity>
         )}
 
-        {!hasCompletedOnboarding && (
+        {!hasCompletedOnboarding ? (
           <>
             <View style={styles.separator}>
               <View style={styles.separatorLine} />
@@ -124,7 +124,14 @@ export default function LoginScreen() {
               <Text style={styles.buttonOnboardingText}>Créer mon compte 🔥</Text>
             </TouchableOpacity>
           </>
-        )}
+        ) : (
+            <TouchableOpacity
+                  onPress={() => useOnboardingStore.getState().reset()}
+                  activeOpacity={0.5}
+                >
+              <Text>Reset</Text>
+            </TouchableOpacity>
+          )}
       </View>
 
       <Text style={styles.legal}>
@@ -139,8 +146,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 80,
-    paddingHorizontal: 32,
+    backgroundColor: '#1e2731'
   },
   header: {
     alignItems: 'center',
@@ -166,6 +172,7 @@ const styles = StyleSheet.create({
     gap: 14,
   },
   buttonGoogle: {
+    width: '100%',
     backgroundColor: '#fff',
     borderRadius: 14,
     padding: 16,
@@ -177,10 +184,10 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   buttonApple: {
-    width: '50%',
+    width: '100%',
     backgroundColor: '#000',
     borderRadius: 14,
-    paddingVertical: 16,
+    padding: 16,
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#333',
@@ -214,6 +221,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#FF4C00',
     backgroundColor: 'rgba(255,76,0,0.08)',
+    width: '100%',
   },
   buttonOnboardingText: {
     color: '#FF4C00',
