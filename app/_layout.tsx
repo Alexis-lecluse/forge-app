@@ -52,7 +52,6 @@ export default function RootLayout() {
       <Stack
         screenOptions={{
           headerStyle: {
-            backgroundColor: 'transparent',
           },
           headerTintColor: '#fff',
           headerTitleStyle: {
@@ -87,7 +86,5 @@ export default function RootLayout() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingBottom: 32,
-    paddingHorizontal: 28
   },
 });

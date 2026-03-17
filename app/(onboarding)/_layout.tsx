@@ -7,7 +7,10 @@ export default function OnboardingLayout() {
         headerShown: false,
         animation: 'slide_from_right',
         contentStyle: {
-          backgroundColor: '#272e35',
+          backgroundColor: '#1e2731',
+          // paddingTop: 80,
+          paddingBottom: 32,
+          paddingHorizontal: 28
         },
       }}
     />

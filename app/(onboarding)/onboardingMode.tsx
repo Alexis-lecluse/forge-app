@@ -63,9 +63,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   top: {
-    marginTop: 56,
     alignItems: 'center',
-    gap: 8,
+    gap: 8
   },
   logo: {
     fontSize: 36,
