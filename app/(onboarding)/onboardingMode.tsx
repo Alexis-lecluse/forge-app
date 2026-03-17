@@ -9,7 +9,7 @@ export default function OnboardingMode() {
 
   function handleSelect(mode: 'guided' | 'free') {
     setMode(mode);
-    router.push(mode === 'guided' ? '/(onboarding)/profile' : '/(auth)/login');
+    router.push(mode === 'guided' ? '/(onboarding)/profile' : '/(onboarding)/freeProfile');
   }
 
   return (

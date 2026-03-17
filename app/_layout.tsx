@@ -4,6 +4,8 @@ import { StatusBar } from 'expo-status-bar';
 import { View, StyleSheet } from 'react-native';
 import { Session } from '@supabase/supabase-js';
 import { supabase } from '../supabase/supabase';
+import { useOnboardingStore } from '../src/store/useOnboardingStore';
+import { saveOnboardingProfile } from '../src/services/saveOnboardingProfile';
 
 export default function RootLayout() {
   const [session, setSession] = useState<Session | null>(null);
@@ -12,9 +14,19 @@ export default function RootLayout() {
   const segments = useSegments();
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
       setInitialized(true);
+      
+      if (event === 'SIGNED_IN' && session) {
+        const store = useOnboardingStore.getState();
+        if (store.onboardingCompleted) {
+         
+          saveOnboardingProfile(session.user.id, store).then(() => {
+            useOnboardingStore.getState().reset();
+          });
+        }
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -40,14 +52,13 @@ export default function RootLayout() {
       <Stack
         screenOptions={{
           headerStyle: {
-            backgroundColor: '#1E2022',
+            backgroundColor: 'transparent',
           },
           headerTintColor: '#fff',
           headerTitleStyle: {
             fontWeight: 'bold',
           },
           contentStyle: {
-            backgroundColor: '#1E2022',
           },
           headerShadowVisible: false,
         }}
@@ -76,7 +87,6 @@ export default function RootLayout() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#272e35',
     paddingBottom: 32,
     paddingHorizontal: 28
   },

@@ -16,6 +16,7 @@ import { WorkoutFooter } from '../../src/components/onboarding/workout/WorkoutFo
 export default function Workout() {
   const router = useRouter();
   const store = useOnboardingStore();
+  const completeOnboarding = useOnboardingStore((s) => s.completeOnboarding);
 
   const [program, setProgram] = useState<GeneratedProgram>(() =>
     generateProgram(store.goal, store.location, store.sessionsPerWeek, store.level)
@@ -84,7 +85,10 @@ export default function Workout() {
         <WorkoutTipCard />
       </ScrollView>
 
-      <WorkoutFooter onConfirm={() => router.push('/(auth)/login')} />
+      <WorkoutFooter onConfirm={() => {
+        completeOnboarding();
+        router.push('/(auth)/login');
+      }} />
 
       <WorkoutSwapModal
         swapTarget={swapTarget}

@@ -1,4 +1,6 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import { zustandStorage } from './zustandStorage';
 
 export type OnboardingMode = 'guided' | 'free';
 export type Gender = 'male' | 'female' | 'non-binary' | 'prefer-not';
@@ -13,7 +15,7 @@ export type TrainingLocation = 'gym' | 'home' | 'both' | 'outdoor';
 export type TrainingLevel = 'beginner' | 'intermediate' | 'advanced';
 export type TargetZone = 'full-body' | 'upper-body' | 'lower-body' | 'abs' | 'back';
 
-interface OnboardingState {
+export interface OnboardingState {
   mode: OnboardingMode | null;
   firstName: string;
   gender: Gender | null;
@@ -28,6 +30,7 @@ interface OnboardingState {
   sessionDuration: number | null;
   level: TrainingLevel | null;
   targetZones: TargetZone[];
+  onboardingCompleted: boolean;
 
   // Actions
   setMode: (mode: OnboardingMode) => void;
@@ -45,49 +48,82 @@ interface OnboardingState {
   setSessionDuration: (n: number) => void;
   setLevel: (level: TrainingLevel) => void;
   toggleTargetZone: (zone: TargetZone) => void;
+  completeOnboarding: () => void;
+  reset: () => void;
 }
 
-export const useOnboardingStore = create<OnboardingState>((set) => ({
-  mode: null,
-  firstName: '',
-  gender: null,
-  age: null,
-  height: null,
-  weight: null,
-  goal: null,
-  customGoal: '',
-  location: null,
-  equipment: [],
-  sessionsPerWeek: null,
-  sessionDuration: null,
-  level: null,
-  targetZones: [],
+export const useOnboardingStore = create<OnboardingState>()(
+  persist(
+    (set) => ({
+      mode: null,
+      firstName: '',
+      gender: null,
+      age: null,
+      height: null,
+      weight: null,
+      goal: null,
+      customGoal: '',
+      location: null,
+      equipment: [],
+      sessionsPerWeek: null,
+      sessionDuration: null,
+      level: null,
+      targetZones: [],
+      onboardingCompleted: false,
 
-  setMode: (mode) => set({ mode }),
-  setFirstName: (firstName) => set({ firstName }),
-  setGender: (gender) => set({ gender }),
-  setAge: (age) => set({ age }),
-  setHeight: (height) => set({ height }),
-  setWeight: (weight) => set({ weight }),
-  setGoal: (goal) => set({ goal }),
-  setCustomGoal: (customGoal) => set({ customGoal }),
-  setLocation: (location) => set({ location, equipment: [] }),
-  toggleEquipment: (item) =>
-    set((s) => ({
-      equipment: s.equipment.includes(item)
-        ? s.equipment.filter((e) => e !== item)
-        : [...s.equipment, item],
-    })),
-  setEquipment: (equipment) => set({ equipment }),
-  setSessionsPerWeek: (sessionsPerWeek) => set({ sessionsPerWeek }),
-  setSessionDuration: (sessionDuration) => set({ sessionDuration }),
-  setLevel: (level) => set({ level }),
-  toggleTargetZone: (zone) =>
-    set((s) => {
-      if (s.targetZones.includes(zone)) {
-        return { targetZones: s.targetZones.filter((z) => z !== zone) };
-      }
-      if (s.targetZones.length >= 2) return {};
-      return { targetZones: [...s.targetZones, zone] };
+      setMode: (mode) => set({ mode }),
+      setFirstName: (firstName) => set({ firstName }),
+      setGender: (gender) => set({ gender }),
+      setAge: (age) => set({ age }),
+      setHeight: (height) => set({ height }),
+      setWeight: (weight) => set({ weight }),
+      setGoal: (goal) => set({ goal }),
+      setCustomGoal: (customGoal) => set({ customGoal }),
+      setLocation: (location) => set({ location, equipment: [] }),
+      toggleEquipment: (item) =>
+        set((s) => ({
+          equipment: s.equipment.includes(item)
+            ? s.equipment.filter((e) => e !== item)
+            : [...s.equipment, item],
+        })),
+      setEquipment: (equipment) => set({ equipment }),
+      setSessionsPerWeek: (sessionsPerWeek) => set({ sessionsPerWeek }),
+      setSessionDuration: (sessionDuration) => set({ sessionDuration }),
+      setLevel: (level) => set({ level }),
+      toggleTargetZone: (zone) =>
+        set((s) => {
+          if (s.targetZones.includes(zone)) {
+            return { targetZones: s.targetZones.filter((z) => z !== zone) };
+          }
+          if (s.targetZones.length >= 2) return {};
+          return { targetZones: [...s.targetZones, zone] };
+        }),
+      completeOnboarding: () => set({ onboardingCompleted: true }),
+      reset: () => set({
+        mode: null, firstName: '', gender: null, age: null, height: null, weight: null,
+        goal: null, customGoal: '', location: null, equipment: [], sessionsPerWeek: null,
+        sessionDuration: null, level: null, targetZones: [], onboardingCompleted: false,
+      }),
     }),
-}));
+  {
+    name: 'onboarding-store',
+    storage: zustandStorage,
+    partialize: (state) => ({
+      mode: state.mode,
+      firstName: state.firstName,
+      gender: state.gender,
+      age: state.age,
+      height: state.height,
+      weight: state.weight,
+      goal: state.goal,
+      customGoal: state.customGoal,
+      location: state.location,
+      equipment: state.equipment,
+      sessionsPerWeek: state.sessionsPerWeek,
+      sessionDuration: state.sessionDuration,
+      level: state.level,
+      targetZones: state.targetZones,
+      onboardingCompleted: state.onboardingCompleted,
+    }),
+  }
+));
